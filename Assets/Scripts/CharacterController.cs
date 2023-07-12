@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,55 +7,74 @@ using UnityEngine.Serialization;
 public class PlayerController : MonoBehaviour
 {
 
-    [Header("Jump Implementation")] [SerializeField]
-    private ProjectEnums.JumpType jumpType;
-
-    [Header("Physics Jump Parameter")] 
-    [Range(0, 100)]
-    [SerializeField] private float jumpForce;
-    [Range(0, 100)]
-    [SerializeField] private float gravity = 9.8f;
+    [Header("Select Variable Parameter")] 
+    [SerializeField] private ProjectEnums.JumpParameters jumpParameters;
     
-    [Header("Quasi Manual Jump Parameter")] 
-    [Range(0, 100)]
-    [SerializeField] private float jumpHeight;
-    [Range(0, 100)]
-    [SerializeField] private float maxGravityAcceleration = 9.8f;
+    [Header("Jump Parameter")] 
+    [Range(0, 10)]
+    [SerializeField] private float gravityScale = 1f;
+    [Range(0f, 20f)]
+    [SerializeField] private float jumpHeight = 10f;
+    [Range(0.1f, 10f)]
+    [SerializeField] private float timeToReachJumpPeak = 1f;
+
+
+    // [Range(0, 100)]
+    // [SerializeField] private float maxGravityAcceleration = 9.8f;
 
     
     private Rigidbody2D _rb;
+    private Vector2 _localGravity;
+    private float _localGravityY;
     private bool _grounded;
+    private float _jumpVelocity;
+
+    private const float BaseGravity = 9.8f;
 
     // Start is called before the first frame update
     void Start()
     {
         _grounded = true;
         _rb = GetComponent<Rigidbody2D>();
+        _rb.gravityScale = 0f;
+        _localGravityY = gravityScale * BaseGravity;
+        
+        JumpParameterCalculation();
 
-        if(jumpType == ProjectEnums.JumpType.EnginePhysics)
-        Physics2D.gravity = new Vector2(0, -gravity);
+        _localGravity = new Vector2(0f, -_localGravityY);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void JumpParameterCalculation()
     {
-        
+        switch (jumpParameters)
+        {
+            case ProjectEnums.JumpParameters.Height:
+            {
+                jumpHeight = (_localGravityY * Mathf.Pow(timeToReachJumpPeak, 2f)) / 2f;
+            }
+                break;
+            case ProjectEnums.JumpParameters.Gravity:
+            {
+                _localGravityY = 2 * jumpHeight / Mathf.Pow(timeToReachJumpPeak, 2f);
+            }
+                break;
+            case ProjectEnums.JumpParameters.Time:
+            {
+                timeToReachJumpPeak = Mathf.Sqrt((2 * jumpHeight)/_localGravityY);
+                break;
+            }
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
-    private void JumpPhysics()
+    private void FixedUpdate()
     {
-        
-        if (!_grounded) return;
-        _grounded = false;
-        
-        //reset y-velocity for consistency
-        _rb.velocity = new Vector2(_rb.velocity.x, 0f);
-        
-        var jumpVec = Vector2.up * jumpForce;
-        _rb.AddForce(jumpVec, ForceMode2D.Impulse);
+        //ApplyGravity
+        _rb.AddForce(_localGravity, ForceMode2D.Force);
     }
 
-    void JumpBasic()
+    private void Jump()
     {
         
         if (!_grounded) return;
@@ -66,17 +86,27 @@ public class PlayerController : MonoBehaviour
         //formula to reach height <jumpHeight>
         //under gravity <maxGravityAcceleration> 
         // v0=sqrt(2gY)
-        var jumpVelocity = Mathf.Sqrt(2f * maxGravityAcceleration * jumpHeight);
-        _rb.velocity = new Vector2(_rb.velocity.x, jumpVelocity);
+        _jumpVelocity = Mathf.Sqrt(2f * _localGravityY * jumpHeight);
+        _rb.velocity = new Vector2(_rb.velocity.x, _jumpVelocity);
     }
 
     public void PlayerHitGround(int id)
     {
         _grounded = true;
+        Jump();
+    }
+    
+    [Obsolete("Not used any more, using a velocity based implementation", true)]
+    private void JumpPhysics()
+    {
         
-        if(jumpType == ProjectEnums.JumpType.EnginePhysics)
-            JumpPhysics();
-        else
-            JumpBasic();
+        if (!_grounded) return;
+        _grounded = false;
+        
+        //reset y-velocity for consistency
+        _rb.velocity = new Vector2(_rb.velocity.x, 0f);
+        
+        var jumpVec = Vector2.up * 10f;
+        _rb.AddForce(jumpVec, ForceMode2D.Impulse);
     }
 }
