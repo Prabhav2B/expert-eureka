@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class ProjectEnums 
 {
-    public enum JumpType
+    public enum JumpParameters
     {
-        EnginePhysics,
-        QuasiCustomPhysics
+        Height,
+        Gravity,
+        Time
     }
 }
