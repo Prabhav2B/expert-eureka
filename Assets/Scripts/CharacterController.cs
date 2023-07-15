@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 public class PlayerController : MonoBehaviour
@@ -20,6 +21,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float jumpHeight;
     [Range(0, 100)]
     [SerializeField] private float maxGravityAcceleration = 9.8f;
+    
+    [Header("Jump Events")]
+    public UnityEvent<float> omJumpApexReached;
+    public UnityEvent<int> onJumpInitiated;
+    public UnityEvent<int> onLanded;
 
     
     private Rigidbody2D _rb;
@@ -32,7 +38,7 @@ public class PlayerController : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
 
         if(jumpType == ProjectEnums.JumpType.EnginePhysics)
-        Physics2D.gravity = new Vector2(0, -gravity);
+            Physics2D.gravity = new Vector2(0, -gravity);
     }
 
     // Update is called once per frame

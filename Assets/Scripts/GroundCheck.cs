@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 
 public class GroundCheck : MonoBehaviour
 {
     
     public LayerMask layerMask;
-    public UnityEvent<int> layerEnterCollision;
-    public UnityEvent<int> layerExitCollision;
+    public UnityEvent<int> onLayerEnterCollision;
+    public UnityEvent<int> onLayerExitCollision;
     
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -18,7 +19,7 @@ public class GroundCheck : MonoBehaviour
         //so that different sound effect of
         //particles can be triggered
         if ((layerMask.value & (1 << other.transform.gameObject.layer)) <= 0) return;
-        layerEnterCollision?.Invoke(0);
+        onLayerEnterCollision?.Invoke(0);
     }
 
     private void OnTriggerExit2D(Collider2D other)
@@ -27,6 +28,6 @@ public class GroundCheck : MonoBehaviour
         //so that different sound effect of
         //particles can be triggered
         if ((layerMask.value & (1 << other.transform.gameObject.layer)) <= 0) return;
-        layerExitCollision?.Invoke(0);
+        onLayerExitCollision?.Invoke(0);
     }
 }
