@@ -19,6 +19,14 @@ public class PlayerController : MonoBehaviour
     [Range(0.1f, 10f)]
     [SerializeField] private float timeToReachJumpPeak = 1f;
     
+    [Header("OptionalSettings")] 
+    [SerializeField] private bool squashAndStretch = false;
+    [Space(5)]
+    [SerializeField] private bool altFallGravity = false;
+    [Range(0, 10)]
+    [SerializeField] private float altFallGravityScale = 1.2f;
+    
+
     [Header("Jump Events")]
     public UnityEvent<float> omJumpApexReached;
     public UnityEvent<int> onJumpInitiated;
@@ -26,11 +34,25 @@ public class PlayerController : MonoBehaviour
 
     private Rigidbody2D _rb;
     private Vector2 _localGravity;
+    private Vector2 _localAltFallGravity;
     private float _localGravityY;
     private bool _grounded;
     private float _jumpVelocity;
 
     private const float BaseGravity = 9.8f;
+
+    private void Awake()
+    {
+        if(squashAndStretch)
+            return;
+        
+        var squashAndStretchComp = GetComponentInChildren<SquashAndStretch>();
+        if (squashAndStretchComp != null)
+        {
+            squashAndStretchComp.DisableSelf();
+        }
+            
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -39,10 +61,12 @@ public class PlayerController : MonoBehaviour
         _rb = GetComponent<Rigidbody2D>();
         _rb.gravityScale = 0f;
         _localGravityY = gravityScale * BaseGravity;
-        
+
+        //this function can alter : jumpHeight, timeToReachJumpPeak and _localGravityY
         JumpParameterCalculation();
         
         _localGravity = new Vector2(0f, -_localGravityY);
+        _localAltFallGravity = new Vector2(0f, -altFallGravityScale * BaseGravity);
 
     }
 
@@ -72,6 +96,16 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (altFallGravity)
+        {
+            if (_rb.velocity.y < 0.01f)
+            {
+                //Apply Alt Gravity
+                _rb.AddForce(_localAltFallGravity, ForceMode2D.Force);
+                return;
+            }   
+        }
+        
         //ApplyGravity
         _rb.AddForce(_localGravity, ForceMode2D.Force);
     }
@@ -82,6 +116,8 @@ public class PlayerController : MonoBehaviour
         if (!_grounded) return;
         _grounded = false;
 
+        onJumpInitiated?.Invoke(0);
+        
         //reset y-velocity for consistency
         _rb.velocity = new Vector2(_rb.velocity.x, 0f);
                 
@@ -95,6 +131,7 @@ public class PlayerController : MonoBehaviour
     public void PlayerHitGround(int id)
     {
         _grounded = true;
+        onLanded?.Invoke(0);
         Jump();
     }
     
@@ -107,7 +144,7 @@ public class PlayerController : MonoBehaviour
         
         //reset y-velocity for consistency
         _rb.velocity = new Vector2(_rb.velocity.x, 0f);
-        
+
         var jumpVec = Vector2.up * 10f;
         _rb.AddForce(jumpVec, ForceMode2D.Impulse);
     }
