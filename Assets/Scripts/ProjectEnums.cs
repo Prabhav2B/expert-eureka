@@ -10,4 +10,10 @@ public class ProjectEnums
         Gravity,
         Time
     }
+    
+    public enum CharacterAction
+    {
+        JumpStationary,
+        MoveBetweenPoints
+    }
 }

@@ -113,6 +113,7 @@ GameObject:
   - component: {fileID: 5293262235111423739}
   - component: {fileID: 2847890916392905817}
   - component: {fileID: 6834586572121828711}
+  - component: {fileID: 64547782522069881}
   - component: {fileID: 5524133389928303835}
   m_Layer: 0
   m_Name: Cube
@@ -211,6 +212,19 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!114 &64547782522069881
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5311456231184830174}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a87d17f5f130cec4682ff4b9631804b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _characterAction: 0
 --- !u!114 &5524133389928303835
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -223,23 +237,48 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cb27163fb5dd3c1438332e213731f49f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpParameters: 0
+  maxMovementSpeed: 5
+  jumpParameters: 1
   gravityScale: 1
   jumpHeight: 5
   timeToReachJumpPeak: 1
-  squashAndStretch: 1
-  altFallGravity: 1
+  squashAndStretch: 0
+  altFallGravity: 0
   altFallGravityScale: 1.2
-  omJumpApexReached:
+  onJumpApexReached:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1704477228904990253}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: Stretch
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onJumpInitiated:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 1704477228904990253}
-        m_TargetAssemblyTypeName: SquashAndStretch, Assembly-CSharp
-        m_MethodName: Stretch
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: StretchAndReset
         m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 90917492762274145}
+        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -279,6 +318,18 @@ MonoBehaviour:
         m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
         m_MethodName: Play
         m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1704477228904990253}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: SquashAndReset
+        m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -385,6 +436,18 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
+      - m_Target: {fileID: 64547782522069881}
+        m_TargetAssemblyTypeName: CharacterBrain, Assembly-CSharp
+        m_MethodName: ExecuteCharacterJumpStationary
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onLayerExitCollision:
     m_PersistentCalls:
       m_Calls: []
@@ -399,6 +462,10 @@ PrefabInstance:
     - target: {fileID: 5638920775803844647, guid: 0af376d40ce500043afa333e12da5622, type: 3}
       propertyPath: m_Name
       value: Particle System
+      objectReference: {fileID: 0}
+    - target: {fileID: 5638920775803844647, guid: 0af376d40ce500043afa333e12da5622, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8507970741237593318, guid: 0af376d40ce500043afa333e12da5622, type: 3}
       propertyPath: m_RootOrder
