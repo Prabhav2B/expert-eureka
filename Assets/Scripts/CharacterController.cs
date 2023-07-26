@@ -11,13 +11,22 @@ public class PlayerController : MonoBehaviour
 {
 
     [Header("Walk Parameter")] 
-    [Range(0f, 20f)]
+    [Range(0.1f, 20f)]
     [SerializeField] private float maxMovementSpeed = 5f;
-    //[Range(0f, 20f)]
-    //[SerializeField] private float acceleration = 10f;
-    //[Range(0.1f, 10f)]
-    //[SerializeField] private float timeToReachJumpPeak = 1f;
+    [Range(0.1f, 20f)]
+    [SerializeField] private float timeToReachMaxSpeed = 2f;
+    [Range(0.1f, 20f)]
+    [SerializeField] private float timeToStop = 2f;
+
+    [SerializeField] private bool flipBoost = false;
+    [Range(0f, 1f)]
+    [SerializeField] private float flipBoostScale = 0.33f;
     
+    [Header("Move Events")]
+    public UnityEvent onMoveLeftStart;
+    public UnityEvent onMoveRightStart;
+    public UnityEvent onStoppedMove;
+
     //This is confusing, needs to be fixed
     [Header("Select Variable Parameter")] 
     [SerializeField] private ProjectEnums.JumpParameters jumpParameters;
@@ -54,8 +63,14 @@ public class PlayerController : MonoBehaviour
     private float _pointA;
     private float _pointB;
     private float _moveDirection;
+    private float _moveVelocity;
+    private float _accelerationRate;
+    private float _decelerationRate;
+    private bool  _hasStopped = true;
+    private bool  _flip = false;
     
     private const float BaseGravity = 9.8f;
+    private const float AccelerationFactor = 0.1f;
 
     private void Awake()
     {
@@ -65,7 +80,7 @@ public class PlayerController : MonoBehaviour
         var squashAndStretchComp = GetComponentInChildren<SpriteAnimations>();
         if (squashAndStretchComp != null)
         {
-            squashAndStretchComp.DisableSelf();
+            squashAndStretchComp.DisableJumpAnimation();
         }
 
     }
@@ -90,6 +105,8 @@ public class PlayerController : MonoBehaviour
         _pointA = transform.position.x + 5f;
         _pointB = transform.position.x - 5f;
         _moveDirection = 1f;
+        _accelerationRate = maxMovementSpeed / timeToReachMaxSpeed;
+        _decelerationRate = maxMovementSpeed / timeToStop;
 
     }
 
@@ -181,6 +198,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        _moveVelocity = 0f;
         StartCoroutine(MoveBetween());
     }
 
@@ -214,15 +232,64 @@ public class PlayerController : MonoBehaviour
     {
         while (true)
         {
+            if (transform.position.x > _pointA && transform.position.x > _pointB && !_flip)
+            {
+                _hasStopped = Decelerate();
+                if (_hasStopped)
+                {
+                    _moveDirection = -1f;
+                    _flip = true;
+                    FlipBoost();
+                    onMoveLeftStart?.Invoke();
+                }
+            }
 
-            if (transform.position.x > _pointA && transform.position.x > _pointB)
-                _moveDirection = -1f;
-            if(transform.position.x < _pointA && transform.position.x < _pointB)
-                _moveDirection = 1f;
+            if (transform.position.x < _pointA && transform.position.x < _pointB && _flip)
+            {
+                _hasStopped = Decelerate();
+                if (_hasStopped)
+                {
+                    _moveDirection = 1f;
+                    _flip = false;
+                    FlipBoost();
+                    onMoveRightStart?.Invoke();
+                }
+            }
 
-            _rb.velocity = new Vector2(maxMovementSpeed * _moveDirection, 0f);
-            yield return new WaitForFixedUpdate();    
+            if (_hasStopped)
+            {
+                Accelerate();
+            }
+
+
+            _rb.velocity = new Vector2(_moveVelocity * _moveDirection, 0f);
+            yield return new WaitForFixedUpdate();
         }
-        
     }
+
+    private void FlipBoost()
+    {
+        if (!flipBoost) return;
+
+        _moveVelocity = maxMovementSpeed * flipBoostScale;
+
+    }
+
+    private bool Decelerate()
+    {
+        //deceleration
+        if (!(_moveVelocity > 0f)) return true;
+        _moveVelocity -= _decelerationRate * Time.fixedDeltaTime;
+        _moveVelocity = Mathf.Clamp(_moveVelocity, 0f, maxMovementSpeed);
+        return false;
+    }
+    
+    private void Accelerate()
+    {
+        //acceleration
+        if (!(_moveVelocity < maxMovementSpeed)) return;
+        _moveVelocity += _accelerationRate * Time.fixedDeltaTime;
+        _moveVelocity = Mathf.Clamp(_moveVelocity, 0f, maxMovementSpeed);
+    }
+
 }
