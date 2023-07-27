@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-
 public class ProjectEnums 
 {
     public enum JumpParameters
@@ -15,5 +11,12 @@ public class ProjectEnums
     {
         JumpStationary,
         MoveBetweenPoints
+    }
+    
+    public enum MovementState
+    {
+        Stopped = -1,
+        Accelerating,
+        Decelerating
     }
 }

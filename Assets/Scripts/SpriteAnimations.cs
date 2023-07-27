@@ -45,27 +45,27 @@ public class SpriteAnimations : MonoBehaviour
 
     public void SquashAndStretch(int id)
     {
+        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Kill();
         _squashStretchSequence = DOTween.Sequence();
-        if (_jumpAnimationDisabled) return;
         _squashStretchSequence.Append(transform.DOScale(squashScale, squashTime).OnComplete(StretchAndReset));
         
     }
     
     public void SquashAndReset(int id)
     {
+        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Kill();
         _squashStretchSequence = DOTween.Sequence();
-        if (_jumpAnimationDisabled) return;
         _squashStretchSequence.Append(transform.DOScale(squashScale, squashTime).OnComplete(ResetScale));
         
     }
 
     public void StretchAndReset()
     {
+        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Kill();
         _squashStretchSequence = DOTween.Sequence();
-        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Append(transform.DOScale(stretchScale, stretchTime).OnComplete(ResetScale));
         
 
@@ -73,27 +73,27 @@ public class SpriteAnimations : MonoBehaviour
     
     public void StretchAndReset(int id)
     {
+        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Kill();
         _squashStretchSequence = DOTween.Sequence();
-        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Append(transform.DOScale(stretchScale, stretchTime).OnComplete(ResetScale));
         
     }
     
     public void Stretch(int id)
     {
+        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Kill();
         _squashStretchSequence = DOTween.Sequence();
-        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Append(transform.DOScale(new Vector3(0.8f, 1.2f, 1f), stretchTime*4f));
             
     }
 
     public void ResetScale(int id)
     {
+        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Kill();
         _squashStretchSequence = DOTween.Sequence();
-        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Append(transform.DOScale(_originalScale, resetTime));
         
     }
@@ -101,33 +101,29 @@ public class SpriteAnimations : MonoBehaviour
     
     private void ResetScale()
     {
+        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Kill();
         _squashStretchSequence = DOTween.Sequence();
-        if(_jumpAnimationDisabled) return;
         _squashStretchSequence.Append(transform.DOScale(_originalScale, resetTime));
         
     }
 
-    public void TiltLeft()
+    public void Tilt(bool isMovingRight)
     {
+        if (_tiltAnimationDisabled) return;
         _tiltSequence.Kill();
         _tiltSequence = DOTween.Sequence();
-        if (_tiltAnimationDisabled) return;
-        _tiltSequence.Append(transform.DOLocalRotate( new Vector3(0f, 0f, tiltAmount), tiltTime));
+
+        var direction = isMovingRight ? -1 : 1;
+        
+        _tiltSequence.Append(transform.DOLocalRotate( new Vector3(0f, 0f, tiltAmount * direction), tiltTime));
     }
-    public void TiltRight()
-    {
-        _tiltSequence.Kill();
-        _tiltSequence = DOTween.Sequence();
-        if (_tiltAnimationDisabled) return;
-        _tiltSequence.Append(transform.DOLocalRotate( new Vector3(0f, 0f, -tiltAmount), tiltTime));
-    }
-    
+
     public void ResetTilt()
     {
+        if (_tiltAnimationDisabled) return;
         _tiltSequence.Kill();
         _tiltSequence = DOTween.Sequence();
-        if (_tiltAnimationDisabled) return;
         _tiltSequence.Append(transform.DOLocalRotate( _originalRot, tiltTime));
     }
     

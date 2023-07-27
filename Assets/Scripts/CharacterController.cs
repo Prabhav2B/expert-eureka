@@ -17,15 +17,20 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float timeToReachMaxSpeed = 2f;
     [Range(0.1f, 20f)]
     [SerializeField] private float timeToStop = 2f;
-
+    
+    [Header("OptionalSettings")] 
+    [SerializeField] private bool moveAnimations = false;
+    [SerializeField] private bool moveVfx = false;
+    [SerializeField] private GameObject moveVfxParent;
     [SerializeField] private bool flipBoost = false;
     [Range(0f, 1f)]
     [SerializeField] private float flipBoostScale = 0.33f;
-    
-    [Header("Move Events")]
-    public UnityEvent onMoveLeftStart;
-    public UnityEvent onMoveRightStart;
+
+    [Header("Move Events")] 
+    public UnityEvent<bool> onAcceleration;
+    public UnityEvent<bool> onDeceleration;
     public UnityEvent onStoppedMove;
+    public UnityEvent<bool> onFlipBoost;
 
     //This is confusing, needs to be fixed
     [Header("Select Variable Parameter")] 
@@ -39,8 +44,12 @@ public class PlayerController : MonoBehaviour
     [Range(0.1f, 10f)]
     [SerializeField] private float timeToReachJumpPeak = 1f;
     
+    
+    
     [Header("OptionalSettings")] 
-    [SerializeField] private bool squashAndStretch = false;
+    [SerializeField] private bool jumpAnimations = false;
+    [SerializeField] private bool jumpVfx = false;
+    [SerializeField] private GameObject jumpVfxParent;
     [Space(5)]
     [SerializeField] private bool altFallGravity = false;
     [Range(0, 10)]
@@ -67,20 +76,29 @@ public class PlayerController : MonoBehaviour
     private float _accelerationRate;
     private float _decelerationRate;
     private bool  _hasStopped = true;
-    private bool  _flip = false;
+    private bool  _flip;
+    private ProjectEnums.MovementState _movementEventFlag;
     
     private const float BaseGravity = 9.8f;
-    private const float AccelerationFactor = 0.1f;
 
     private void Awake()
     {
-        if(squashAndStretch)
-            return;
-        
-        var squashAndStretchComp = GetComponentInChildren<SpriteAnimations>();
-        if (squashAndStretchComp != null)
+        if (!jumpAnimations)
         {
-            squashAndStretchComp.DisableJumpAnimation();
+            var animComponent = GetComponentInChildren<SpriteAnimations>();
+            if (animComponent != null)
+            {
+                animComponent.DisableJumpAnimation();
+            }
+        }
+        
+        if (!moveAnimations)
+        {
+            var animComponent = GetComponentInChildren<SpriteAnimations>();
+            if (animComponent != null)
+            {
+                animComponent.DisableTiltAnimation();
+            }
         }
 
     }
@@ -90,7 +108,16 @@ public class PlayerController : MonoBehaviour
     {
         // Set isFirstFrame to true on Start to allow events to be fired after the first frame
         _isFirstFrame = true;
-        
+
+        if (jumpVfxParent == null)
+        {
+            Debug.LogWarning("Move Vfx parent not assigned", this);
+        }
+        else
+        {
+            jumpVfxParent.SetActive(jumpVfx);
+        }
+
         _grounded = true;
         _rb = GetComponent<Rigidbody2D>();
         _rb.gravityScale = 0f;
@@ -107,6 +134,17 @@ public class PlayerController : MonoBehaviour
         _moveDirection = 1f;
         _accelerationRate = maxMovementSpeed / timeToReachMaxSpeed;
         _decelerationRate = maxMovementSpeed / timeToStop;
+
+        if (moveVfxParent == null)
+        {
+            Debug.LogWarning("Move Vfx parent not assigned", this);
+        }
+        else
+        {
+            moveVfxParent.SetActive(moveVfx);
+        }
+
+        _movementEventFlag = ProjectEnums.MovementState.Stopped;
 
     }
 
@@ -234,31 +272,29 @@ public class PlayerController : MonoBehaviour
         {
             if (transform.position.x > _pointA && transform.position.x > _pointB && !_flip)
             {
-                _hasStopped = Decelerate();
+                _hasStopped = Decelerate(false);
                 if (_hasStopped)
                 {
                     _moveDirection = -1f;
                     _flip = true;
-                    FlipBoost();
-                    onMoveLeftStart?.Invoke();
+                    FlipBoost(_moveDirection>0);
                 }
             }
 
             if (transform.position.x < _pointA && transform.position.x < _pointB && _flip)
             {
-                _hasStopped = Decelerate();
+                _hasStopped = Decelerate(true);
                 if (_hasStopped)
                 {
                     _moveDirection = 1f;
                     _flip = false;
-                    FlipBoost();
-                    onMoveRightStart?.Invoke();
+                    FlipBoost(_moveDirection>0);
                 }
             }
 
             if (_hasStopped)
             {
-                Accelerate();
+                Accelerate(_moveDirection>0);
             }
 
 
@@ -267,27 +303,46 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    private void FlipBoost()
+    private void FlipBoost(bool isMovingRight)
     {
         if (!flipBoost) return;
 
         _moveVelocity = maxMovementSpeed * flipBoostScale;
+        onFlipBoost?.Invoke(isMovingRight);
 
     }
 
-    private bool Decelerate()
+    private bool Decelerate(bool isMovingRight)
     {
         //deceleration
-        if (!(_moveVelocity > 0f)) return true;
+        if (!(_moveVelocity > 0f))
+        {
+            onStoppedMove?.Invoke();
+            _movementEventFlag = ProjectEnums.MovementState.Stopped;
+            return true;
+        }
+
+        if (_movementEventFlag != ProjectEnums.MovementState.Decelerating)
+        {
+            onDeceleration?.Invoke(isMovingRight);
+            _movementEventFlag = ProjectEnums.MovementState.Decelerating;
+        }
+
         _moveVelocity -= _decelerationRate * Time.fixedDeltaTime;
         _moveVelocity = Mathf.Clamp(_moveVelocity, 0f, maxMovementSpeed);
         return false;
     }
     
-    private void Accelerate()
+    private void Accelerate(bool isMovingRight)
     {
         //acceleration
         if (!(_moveVelocity < maxMovementSpeed)) return;
+        
+        if (_movementEventFlag != ProjectEnums.MovementState.Accelerating)
+        {
+            onAcceleration?.Invoke(isMovingRight);
+            _movementEventFlag = ProjectEnums.MovementState.Accelerating;
+        }
         _moveVelocity += _accelerationRate * Time.fixedDeltaTime;
         _moveVelocity = Mathf.Clamp(_moveVelocity, 0f, maxMovementSpeed);
     }
