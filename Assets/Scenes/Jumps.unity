@@ -4102,7 +4102,7 @@ ParticleSystem:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  moveWithTransform: 0
+  moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
   randomSeed: 0
@@ -4165,8 +4165,8 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 5
-      minScalar: 2
+      scalar: 3
+      minScalar: 1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4283,8 +4283,8 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.5
-      minScalar: 0.2
+      scalar: 0.3
+      minScalar: 0.1
       maxCurve:
         serializedVersion: 2
         m_Curve:
@@ -4866,7 +4866,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5.94
+      scalar: 7
       minScalar: 10
       maxCurve:
         serializedVersion: 2
@@ -10487,6 +10487,11 @@ TrailRenderer:
   m_Autodestruct: 0
   m_Emitting: 1
   m_ApplyActiveColorSpace: 1
+--- !u!1 &1405375783 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1070101253301756502, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
+  m_PrefabInstance: {fileID: 723829714998749280}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1412881584
 GameObject:
   m_ObjectHideFlags: 0
@@ -12587,7 +12592,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5293262235111423739, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -4.6
+      value: -0.8499999
       objectReference: {fileID: 0}
     - target: {fileID: 5293262235111423739, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -12639,7 +12644,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: flipBoost
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: timeToStop
@@ -12667,7 +12672,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: maxMovementSpeed
-      value: 10
+      value: 15.1
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: timeToReachMaxSpeed
@@ -12835,11 +12840,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onDeceleration.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
-      value: SetDirection
+      value: StopMovementFx
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onDeceleration.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
-      value: SetDirection
+      value: TurnDustVfx
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onDeceleration.m_PersistentCalls.m_Calls.Array.data[3].m_MethodName
@@ -13363,7 +13368,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5293262235111423739, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.1
+      value: -14.6
       objectReference: {fileID: 0}
     - target: {fileID: 5293262235111423739, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: m_LocalPosition.y
@@ -13407,7 +13412,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5311456231184830174, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
+      propertyPath: jumpVfx
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
+      propertyPath: jumpVfxParent
+      value: 
+      objectReference: {fileID: 1405375783}
+    - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
+      propertyPath: altFallGravity
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
+      propertyPath: jumpAnimations
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5524133389928303835, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: maxMovementSpeed

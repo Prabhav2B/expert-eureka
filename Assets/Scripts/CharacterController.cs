@@ -76,6 +76,7 @@ public class PlayerController : MonoBehaviour
     private float _accelerationRate;
     private float _decelerationRate;
     private bool  _hasStopped = true;
+    private bool  _completedPause = true;
     private bool  _flip;
     private ProjectEnums.MovementState _movementEventFlag;
     
@@ -256,10 +257,10 @@ public class PlayerController : MonoBehaviour
     public void StartIdle()
     {
         if(!_grounded) return;
-        StartCoroutine(Idleing());
+        StartCoroutine(IdleThenJump());
     }
 
-    private IEnumerator Idleing()
+    private IEnumerator IdleThenJump()
     {
         //yield return new WaitForSeconds(Random.Range(0f, 2f));
         yield return new WaitForSeconds(1.2f);
@@ -277,7 +278,7 @@ public class PlayerController : MonoBehaviour
                 {
                     _moveDirection = -1f;
                     _flip = true;
-                    FlipBoost(_moveDirection>0);
+                    StartCoroutine(IdleThenMove());
                 }
             }
 
@@ -288,11 +289,11 @@ public class PlayerController : MonoBehaviour
                 {
                     _moveDirection = 1f;
                     _flip = false;
-                    FlipBoost(_moveDirection>0);
+                    StartCoroutine(IdleThenMove());
                 }
             }
 
-            if (_hasStopped)
+            if (_hasStopped && _completedPause)
             {
                 Accelerate(_moveDirection>0);
             }
@@ -345,6 +346,15 @@ public class PlayerController : MonoBehaviour
         }
         _moveVelocity += _accelerationRate * Time.fixedDeltaTime;
         _moveVelocity = Mathf.Clamp(_moveVelocity, 0f, maxMovementSpeed);
+    }
+    
+    private IEnumerator IdleThenMove()
+    {
+        _completedPause = false;
+        //yield return new WaitForSeconds(Random.Range(0f, 2f));
+        yield return new WaitForSeconds(1.2f);
+        FlipBoost(_moveDirection>0);
+        _completedPause = true;
     }
 
 }
