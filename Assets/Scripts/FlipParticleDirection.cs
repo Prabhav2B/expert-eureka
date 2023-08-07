@@ -9,16 +9,20 @@ public class FlipParticleDirection : MonoBehaviour
     [SerializeField] private ParticleSystem dustExplosionLeft;
     [SerializeField] private ParticleSystem dustExplosionRight;
     
+    private Rigidbody2D _rb;
+    
     private void Start()
     {
+        _rb = GetComponentInParent<Rigidbody2D>();
         if (dustStream == null)
         {
             Debug.LogWarning("Particle System not assigned", this);
         }
     }
 
-    public void StopMovementFx(bool isMovingRight)
+    public void StopMovementFx(bool isMovingRight, bool isGrounded)
     {
+        if(!isGrounded) return;
         dustStream.Stop();
     }
 
@@ -30,8 +34,10 @@ public class FlipParticleDirection : MonoBehaviour
         dustStreamShape.rotation = new Vector3(0, 0, 90f * direction);
     }
     
-    public void TurnDustVfx(bool isMovingRight)
+    public void TurnDustVfx(bool isMovingRight, bool isGrounded)
     {
+        if(!isGrounded) return;
+        if(Mathf.Abs(_rb.velocity.x) <  6f) return;
         if (isMovingRight)
         {
             dustExplosionLeft.Play();

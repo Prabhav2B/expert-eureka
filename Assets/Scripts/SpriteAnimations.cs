@@ -110,6 +110,11 @@ public class SpriteAnimations : MonoBehaviour
 
     public void Tilt(bool isMovingRight)
     {
+        Tilt(isMovingRight, false);
+    }
+    
+    public void Tilt(bool isMovingRight, bool isGrounded)
+    {
         if (_tiltAnimationDisabled) return;
         _tiltSequence.Kill();
         _tiltSequence = DOTween.Sequence();

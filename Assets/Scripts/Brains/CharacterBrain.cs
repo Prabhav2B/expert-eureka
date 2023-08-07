@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-[RequireComponent(typeof(PlayerController))]
+[RequireComponent(typeof(CustomCharacterController))]
 public class CharacterBrain : MonoBehaviour
 {
     [Header("Character Operation Mode")] 
     [SerializeField] private ProjectEnums.CharacterAction characterAction;
 
-    private PlayerController _characterController;
+    private CustomCharacterController _characterController;
     
     // Start is called before the first frame update
     void Start()
     {
-        _characterController = GetComponent<PlayerController>();
+        _characterController = GetComponent<CustomCharacterController>();
         if(_characterController == null)
             Debug.LogError("Essential Component Missing", this);
         

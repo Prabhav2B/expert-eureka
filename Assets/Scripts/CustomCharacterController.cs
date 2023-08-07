@@ -7,7 +7,7 @@ using UnityEngine.Events;
 using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
-public class PlayerController : MonoBehaviour
+public class CustomCharacterController : MonoBehaviour
 {
 
     [Header("Walk Parameter")] 
@@ -28,7 +28,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("Move Events")] 
     public UnityEvent<bool> onAcceleration;
-    public UnityEvent<bool> onDeceleration;
+    public UnityEvent<bool, bool> onDeceleration;
     public UnityEvent onStoppedMove;
     public UnityEvent<bool> onFlipBoost;
 
@@ -65,22 +65,25 @@ public class PlayerController : MonoBehaviour
     private Vector2 _localGravity;
     private Vector2 _localAltFallGravity;
     private float _localGravityY;
-    private bool _grounded;
     private float _jumpVelocity;
     private float _previousFrameYVelocity;
-    private bool _isFirstFrame = true;
     private float _pointA;
     private float _pointB;
     private float _moveDirection;
-    private float _moveVelocity;
+    private float _moveSpeed;
     private float _accelerationRate;
     private float _decelerationRate;
-    private bool  _hasStopped = true;
-    private bool  _completedPause = true;
-    private bool  _flip;
-    private ProjectEnums.MovementState _movementEventFlag;
-    
+    private bool _isGrounded;
+    private bool _isFirstCollision = true;
+    private bool _hasStopped = true;
+    private bool _hasCompletedPause = true;
+    private bool _flip;
+
+    public ProjectEnums.MovementState MovementEventFlag { get; private set; }
+
     private const float BaseGravity = 9.8f;
+
+
 
     private void Awake()
     {
@@ -108,7 +111,7 @@ public class PlayerController : MonoBehaviour
     private void Start()
     {
         // Set isFirstFrame to true on Start to allow events to be fired after the first frame
-        _isFirstFrame = true;
+        _isFirstCollision = true;
 
         if (jumpVfxParent == null)
         {
@@ -119,7 +122,7 @@ public class PlayerController : MonoBehaviour
             jumpVfxParent.SetActive(jumpVfx);
         }
 
-        _grounded = true;
+        _isGrounded = true;
         _rb = GetComponent<Rigidbody2D>();
         _rb.gravityScale = 0f;
         _localGravityY = gravityScale * BaseGravity;
@@ -145,7 +148,7 @@ public class PlayerController : MonoBehaviour
             moveVfxParent.SetActive(moveVfx);
         }
 
-        _movementEventFlag = ProjectEnums.MovementState.Stopped;
+        MovementEventFlag = ProjectEnums.MovementState.Stopped;
 
     }
 
@@ -191,7 +194,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        if (_grounded) return;
+        if (_isGrounded) return;
 
         if (Mathf.Sign(_rb.velocity.y) < 0f && _previousFrameYVelocity >= 0f)
         {
@@ -201,11 +204,11 @@ public class PlayerController : MonoBehaviour
         _previousFrameYVelocity = Mathf.Sign(_rb.velocity.y);
     }
 
-    private void Jump()
+    public void Jump()
     {
         
-        if (!_grounded) return;
-        _grounded = false;
+        if (!_isGrounded) return;
+        _isGrounded = false;
 
         onJumpInitiated?.Invoke(0);
         
@@ -237,26 +240,26 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        _moveVelocity = 0f;
+        _moveSpeed = 0f;
         StartCoroutine(MoveBetween());
     }
 
     public void PlayerHitGround(int id)
     {
         // Check if it's the first frame, and if so, skip invoking the event
-        if (_isFirstFrame)
+        if (_isFirstCollision)
         {
-            _isFirstFrame = false;
-            _grounded = true;
+            _isFirstCollision = false;
+            _isGrounded = true;
             return;
         }
-        _grounded = true;
+        _isGrounded = true;
         onLanded?.Invoke(0);
     }
     
     public void StartIdle()
     {
-        if(!_grounded) return;
+        if(!_isGrounded) return;
         StartCoroutine(IdleThenJump());
     }
 
@@ -273,7 +276,7 @@ public class PlayerController : MonoBehaviour
         {
             if (transform.position.x > _pointA && transform.position.x > _pointB && !_flip)
             {
-                _hasStopped = Decelerate(false);
+                _hasStopped = Decelerate();
                 if (_hasStopped)
                 {
                     _moveDirection = -1f;
@@ -284,7 +287,7 @@ public class PlayerController : MonoBehaviour
 
             if (transform.position.x < _pointA && transform.position.x < _pointB && _flip)
             {
-                _hasStopped = Decelerate(true);
+                _hasStopped = Decelerate();
                 if (_hasStopped)
                 {
                     _moveDirection = 1f;
@@ -293,13 +296,11 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
-            if (_hasStopped && _completedPause)
+            if (_hasStopped && _hasCompletedPause)
             {
                 Accelerate(_moveDirection>0);
             }
 
-
-            _rb.velocity = new Vector2(_moveVelocity * _moveDirection, 0f);
             yield return new WaitForFixedUpdate();
         }
     }
@@ -308,53 +309,60 @@ public class PlayerController : MonoBehaviour
     {
         if (!flipBoost) return;
 
-        _moveVelocity = maxMovementSpeed * flipBoostScale;
+        _moveSpeed = maxMovementSpeed * flipBoostScale;
         onFlipBoost?.Invoke(isMovingRight);
 
     }
 
-    private bool Decelerate(bool isMovingRight)
+    public bool Decelerate()
     {
         //deceleration
-        if (!(_moveVelocity > 0f))
+        if (!(_moveSpeed > 0f))
         {
             onStoppedMove?.Invoke();
-            _movementEventFlag = ProjectEnums.MovementState.Stopped;
+            MovementEventFlag = ProjectEnums.MovementState.Stopped;
             return true;
         }
 
-        if (_movementEventFlag != ProjectEnums.MovementState.Decelerating)
+        if (MovementEventFlag != ProjectEnums.MovementState.Decelerating)
         {
-            onDeceleration?.Invoke(isMovingRight);
-            _movementEventFlag = ProjectEnums.MovementState.Decelerating;
+            onDeceleration?.Invoke(!(_rb.velocity.x > 0f), _isGrounded);
+            MovementEventFlag = ProjectEnums.MovementState.Decelerating;
         }
 
-        _moveVelocity -= _decelerationRate * Time.fixedDeltaTime;
-        _moveVelocity = Mathf.Clamp(_moveVelocity, 0f, maxMovementSpeed);
+        _moveSpeed -= _decelerationRate * Time.fixedDeltaTime;
+        _moveSpeed = Mathf.Clamp(_moveSpeed, 0f, maxMovementSpeed);
+        
+        var dir = _rb.velocity.x > 0f ? 1f : -1f;
+        _rb.velocity = new Vector2(_moveSpeed * dir, _rb.velocity.y);
+        
         return false;
     }
     
-    private void Accelerate(bool isMovingRight)
+    public void Accelerate(bool isInputRight)
     {
         //acceleration
-        if (!(_moveVelocity < maxMovementSpeed)) return;
+        if (!(_moveSpeed < maxMovementSpeed)) return;
         
-        if (_movementEventFlag != ProjectEnums.MovementState.Accelerating)
+        if (MovementEventFlag != ProjectEnums.MovementState.Accelerating)
         {
-            onAcceleration?.Invoke(isMovingRight);
-            _movementEventFlag = ProjectEnums.MovementState.Accelerating;
+            MovementEventFlag = ProjectEnums.MovementState.Accelerating;
+            onAcceleration?.Invoke(isInputRight);
         }
-        _moveVelocity += _accelerationRate * Time.fixedDeltaTime;
-        _moveVelocity = Mathf.Clamp(_moveVelocity, 0f, maxMovementSpeed);
+        _moveSpeed += _accelerationRate * Time.fixedDeltaTime;
+        _moveSpeed = Mathf.Clamp(_moveSpeed, 0f, maxMovementSpeed);
+
+        var dir = isInputRight ? 1f : -1f;
+        _rb.velocity = new Vector2(_moveSpeed * dir, _rb.velocity.y);
     }
     
     private IEnumerator IdleThenMove()
     {
-        _completedPause = false;
+        _hasCompletedPause = false;
         //yield return new WaitForSeconds(Random.Range(0f, 2f));
         yield return new WaitForSeconds(1.2f);
         FlipBoost(_moveDirection>0);
-        _completedPause = true;
+        _hasCompletedPause = true;
     }
 
 }
