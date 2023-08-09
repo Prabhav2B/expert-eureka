@@ -107,11 +107,6 @@ public class SpriteAnimations : MonoBehaviour
         _squashStretchSequence.Append(transform.DOScale(_originalScale, resetTime));
         
     }
-
-    public void Tilt(bool isMovingRight)
-    {
-        Tilt(isMovingRight, false);
-    }
     
     public void Tilt(bool isMovingRight, bool isGrounded)
     {

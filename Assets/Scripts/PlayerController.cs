@@ -29,9 +29,11 @@ public class PlayerController : MonoBehaviour
     
     public void JumpInputReceived(InputAction.CallbackContext context)
     {
-        if(!context.performed) return;
+        if(context.started)
+            _characterController.Jump();
         
-        _characterController.Jump();
+        if(context.canceled)
+            _characterController.JumpCancelled();
     }
 
     protected void FixedUpdate()
