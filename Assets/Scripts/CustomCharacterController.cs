@@ -155,6 +155,7 @@ public class CustomCharacterController : MonoBehaviour
 
         MovementEventFlag = ProjectEnums.MovementState.Stopped;
 
+
     }
 
     private void JumpParameterCalculation()

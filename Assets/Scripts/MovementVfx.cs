@@ -39,8 +39,8 @@ public class MovementVfx : MonoBehaviour
     
     public void StartMovementVfx()
     {
-        if(!Mathf.Approximately(Mathf.Abs (_rb.velocity.x)
-               , _customCharacterController.MaxMovementSpeed)) return;
+        if (gameObject.activeSelf == false) return;
+        if(Mathf.Abs (_rb.velocity.x) <= _customCharacterController.MaxMovementSpeed - 1f) return;
 
         dustStream.Play();
         var dustStreamShape = dustStream.shape;
@@ -49,9 +49,9 @@ public class MovementVfx : MonoBehaviour
     }
     public void StartMovementVfx(bool isMovingRight, bool isGrounded)
     {
+        if (gameObject.activeSelf == false) return;
         if(!isGrounded) return;
-        if(!Mathf.Approximately(Mathf.Abs (_rb.velocity.x)
-               , _customCharacterController.MaxMovementSpeed)) return;
+        if(Mathf.Abs (_rb.velocity.x) <= _customCharacterController.MaxMovementSpeed - 1f) return;
 
         dustStream.Play();
         var dustStreamShape = dustStream.shape;
