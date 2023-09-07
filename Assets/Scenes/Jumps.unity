@@ -18565,15 +18565,15 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-  jumpParameters: 1
-  gravityScale: 1
+  jumpParameters: 2
+  gravityScale: 5.02
   maxJumpHeight: 5
   timeToReachMaxJumpPeak: 0.5
   jumpAnimations: 1
   jumpVfx: 1
   jumpVfxParent: {fileID: 1468718580}
   altFallGravity: 1
-  altFallGravityScale: 3.34
+  altFallGravityScale: 5.42
   airControl: 1
   airControlAmount: 0.182
   onJumpApexReached:
