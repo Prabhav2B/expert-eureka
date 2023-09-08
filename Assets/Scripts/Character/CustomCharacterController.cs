@@ -1,15 +1,14 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Tilemaps;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
+
 
 public class CustomCharacterController : MonoBehaviour
 {
 
+    [SerializeField] private EnergyConfig energyConfig;
+    
     [Header("Walk Parameter")] 
     [Range(0.1f, 20f)]
     [SerializeField] private float maxMovementSpeed = 5f;
@@ -44,9 +43,7 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] private float maxJumpHeight = 10f;
     [Range(0.1f, 10f)]
     [SerializeField] private float timeToReachMaxJumpPeak = 1f;
-    
-    
-    
+
     [Header("OptionalSettings")] 
     [SerializeField] private bool jumpAnimations = false;
     [SerializeField] private bool jumpVfx = false;
@@ -57,13 +54,13 @@ public class CustomCharacterController : MonoBehaviour
     [SerializeField] private float altFallGravityScale = 1.2f;
 
     [SerializeField] private bool airControl = true;
-    [Range(0f, 1f)] [SerializeField] private float airControlAmount = 1f;   
-    
+    [Range(0f, 1f)] [SerializeField] private float airControlAmount = 1f;
 
     [Header("Jump Events")]
     public UnityEvent<float> onJumpApexReached;
     public UnityEvent<int> onJumpInitiated;
     public UnityEvent<int> onLanded;
+
 
     private Rigidbody2D _rb;
     private Vector2 _localGravity;
@@ -78,12 +75,17 @@ public class CustomCharacterController : MonoBehaviour
     private float _prevMoveSpeed;
     private float _accelerationRate;
     private float _decelerationRate;
+    private float _energyConsumed;
+    private float _energyThreshold;
     private bool _isJumpCancelled;
     private bool _isGrounded;
     private bool _isFirstCollision = true;
     private bool _hasStopped = true;
     private bool _hasCompletedPause = true;
     private bool _flip;
+    private bool _isEnergyCharacter;
+    private EnergyManager _energyManager;
+    
 
     public ProjectEnums.MovementState MovementEventFlag { get; private set; }
     public float MaxMovementSpeed => maxMovementSpeed;
@@ -112,6 +114,10 @@ public class CustomCharacterController : MonoBehaviour
         
         _rb = GetComponent<Rigidbody2D>();
         _rb.gravityScale = 0f;
+
+        _energyManager = GetComponentInChildren<EnergyManager>();
+        if (!(_energyManager == null))
+            _isEnergyCharacter = true;
     }
 
     // Start is called before the first frame update
@@ -214,8 +220,22 @@ public class CustomCharacterController : MonoBehaviour
         {
             onJumpApexReached?.Invoke(0);
         }
-
         _previousFrameYVelocity = Mathf.Sign(_rb.velocity.y);
+
+        
+        
+        //Handle energy related events for jumping
+        //Movement energy in Accelerate function
+        if (!_isEnergyCharacter) return;
+
+        if (!_isJumpCancelled && _rb.velocity.y > 0.1f)
+            _energyConsumed += energyConfig.EnergyConsumedPerJumpTick;
+
+        if (_energyConsumed >= _energyManager.SingleCellEnergy * 0.5f)
+        {
+            _energyManager.onEnergyConsumed?.Invoke(_energyConsumed);
+            _energyConsumed = 0f;
+        }
     }
 
     public void Jump()
@@ -318,7 +338,20 @@ public class CustomCharacterController : MonoBehaviour
 
         var effectiveAcceleration = !_isGrounded ? _accelerationRate * airControlAmount : _accelerationRate;
         
-        //acceleration
+        //Handle energy related events for movement
+        //Jump energy in Fixed Update
+        if (_isEnergyCharacter)
+        {
+            _energyConsumed += energyConfig.EnergyConsumedPerMoveTick;
+
+            if (_energyConsumed >= _energyManager.SingleCellEnergy * 0.5f)
+            {
+                _energyManager.onEnergyConsumed?.Invoke(_energyConsumed);
+                _energyConsumed = 0f;
+            }
+        }
+
+        //if at max speed, end here
         if (!(Mathf.Abs(_rb.velocity.x) < maxMovementSpeed)) return;
 
         _moveSpeed = Mathf.Abs(_rb.velocity.x);
@@ -342,8 +375,19 @@ public class CustomCharacterController : MonoBehaviour
         
         var dir = isInputRight ? 1f : -1f;
         _rb.velocity = new Vector2(_moveSpeed * dir, _rb.velocity.y);
+        
+        
     }
-
+    
+    [Serializable]
+    public struct EnergyConfig {
+        [SerializeField] private float energyConsumedPerJumpTick;
+        [SerializeField] private float energyConsumedPerMoveTick;
+ 
+        public float EnergyConsumedPerJumpTick => energyConsumedPerJumpTick;
+        public float EnergyConsumedPerMoveTick => energyConsumedPerMoveTick;
+    }
+    
     //Might refactor these
     #region Brain-Related-Functions
     public void MoveBetweenPositions(Vector3 pointA = default, Vector3 pointB = default)
