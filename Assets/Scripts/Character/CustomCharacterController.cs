@@ -53,7 +53,7 @@ public class CustomCharacterController : MonoBehaviour
     [Range(0, 10)]
     [SerializeField] private float altFallGravityScale = 1.2f;
 
-    [SerializeField] private bool airControl = true;
+    [SerializeField] protected bool airControl = true;
     [Range(0f, 1f)] [SerializeField] private float airControlAmount = 1f;
 
     [Header("Jump Events")]
@@ -62,7 +62,7 @@ public class CustomCharacterController : MonoBehaviour
     public UnityEvent<int> onLanded;
 
 
-    private Rigidbody2D _rb;
+    protected Rigidbody2D Rb;
     private Vector2 _localGravity;
     private Vector2 _localAltFallGravity;
     private float _localGravityY;
@@ -84,7 +84,6 @@ public class CustomCharacterController : MonoBehaviour
     private bool _hasCompletedPause = true;
     private bool _flip;
     private bool _isEnergyCharacter;
-    private bool _isOverloaded;
     private EnergyManager _energyManager;
     
 
@@ -113,8 +112,8 @@ public class CustomCharacterController : MonoBehaviour
             }
         }
         
-        _rb = GetComponent<Rigidbody2D>();
-        _rb.gravityScale = 0f;
+        Rb = GetComponent<Rigidbody2D>();
+        Rb.gravityScale = 0f;
 
         _energyManager = GetComponentInChildren<EnergyManager>();
         if (!(_energyManager == null))
@@ -122,7 +121,7 @@ public class CustomCharacterController : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    private void Start()
+    protected void Start()
     {
         // Set isFirstFrame to true on Start to allow events to be fired after the first frame
         _isFirstCollision = true;
@@ -162,11 +161,7 @@ public class CustomCharacterController : MonoBehaviour
 
         MovementEventFlag = ProjectEnums.MovementState.Stopped;
     }
-
-    public void Overload()
-    {
-        _isOverloaded = true;
-    }
+    
     private void JumpParameterCalculation()
     {
         switch (jumpParameters)
@@ -191,54 +186,55 @@ public class CustomCharacterController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    protected void FixedUpdate()
     {
         if (altFallGravity)
         {
-            if (_rb.velocity.y < 0.01f)
+            if (Rb.velocity.y < 0.01f)
             {
                 //Apply Alt Gravity
-                _rb.AddForce(_localAltFallGravity, ForceMode2D.Force);
+                Rb.AddForce(_localAltFallGravity, ForceMode2D.Force);
                 return;
             }   
         }
         
         if (_isJumpCancelled)
         {
-            if (_rb.velocity.y >= _velocityForMaxJumpHeight / 3f)
-                _rb.velocity += new Vector2( 0, (-1f * _velocityForMaxJumpHeight) / 4f);
+            if (Rb.velocity.y >= _velocityForMaxJumpHeight / 3f)
+                Rb.velocity += new Vector2( 0, (-1f * _velocityForMaxJumpHeight) / 4f);
 
             _isJumpCancelled = false;
         }
         
         //ApplyGravity
-        _rb.AddForce(_localGravity, ForceMode2D.Force);
+        Rb.AddForce(_localGravity, ForceMode2D.Force);
     }
 
-    private void Update()
+    protected void Update()
     {
-        if (_isGrounded) return;
-
-        if (Mathf.Sign(_rb.velocity.y) < 0f && _previousFrameYVelocity >= 0f)
+        if (!_isGrounded)
         {
-            onJumpApexReached?.Invoke(0);
-        }
-        _previousFrameYVelocity = Mathf.Sign(_rb.velocity.y);
+            if (Mathf.Sign(Rb.velocity.y) < 0f && _previousFrameYVelocity >= 0f)
+            {
+                onJumpApexReached?.Invoke(0);
+            }
 
-        
-        
+            _previousFrameYVelocity = Mathf.Sign(Rb.velocity.y);
+        }
+
         //Handle energy related events for jumping
         //Movement energy in Accelerate function
         if (!_isEnergyCharacter) return;
 
-        if (!_isJumpCancelled && _rb.velocity.y > 0.1f)
-            _energyConsumed += energyConfig.EnergyConsumedPerJumpTick;
+        if (!_isJumpCancelled && Rb.velocity.y > 0.1f)
+            _energyManager.onEnergyConsumed?.Invoke(energyConfig.EnergyConsumedPerJumpTick * Time.deltaTime);
 
-        if (_energyConsumed >= _energyManager.SingleCellEnergy * 0.5f)
-        {
-            _energyManager.onEnergyConsumed?.Invoke(_energyConsumed);
-            _energyConsumed = 0f;
-        }
+
+        if (MovementEventFlag != ProjectEnums.MovementState.Accelerating) return;
+        //Handle energy related events for movement
+        //Jump energy in Fixed Update
+        _energyManager.onEnergyConsumed?.Invoke(energyConfig.EnergyConsumedPerMoveTick * Time.deltaTime);
+
     }
 
     public void Jump()
@@ -251,13 +247,13 @@ public class CustomCharacterController : MonoBehaviour
         onJumpInitiated?.Invoke(0);
         
         //reset y-velocity for consistency
-        _rb.velocity = new Vector2(_rb.velocity.x, 0f);
+        Rb.velocity = new Vector2(Rb.velocity.x, 0f);
                 
         //formula to reach height <jumpHeight>
         //under gravity <maxGravityAcceleration> 
         // v0=sqrt(2gY)
         _velocityForMaxJumpHeight = Mathf.Sqrt(2f * _localGravityY * maxJumpHeight);
-        _rb.velocity = new Vector2(_rb.velocity.x, _velocityForMaxJumpHeight);
+        Rb.velocity = new Vector2(Rb.velocity.x, _velocityForMaxJumpHeight);
         
     }
 
@@ -270,7 +266,7 @@ public class CustomCharacterController : MonoBehaviour
     {
         
         if (_isGrounded) return;
-        if(_rb.velocity.y <= 0f) return;
+        if(Rb.velocity.y <= 0f) return;
         
         
         //reset y-velocity for consistency
@@ -292,7 +288,7 @@ public class CustomCharacterController : MonoBehaviour
         onLanded?.Invoke(0);
         
         if(airControl) return;
-        _rb.velocity = new Vector2(_rb.velocity.x/2f, _rb.velocity.y);
+        Rb.velocity = new Vector2(Rb.velocity.x/2f, Rb.velocity.y);
     }
 
     private void FlipBoost(bool isMovingRight)
@@ -322,15 +318,15 @@ public class CustomCharacterController : MonoBehaviour
 
         if (MovementEventFlag != ProjectEnums.MovementState.Decelerating)
         {
-            onDeceleration?.Invoke(!(_rb.velocity.x > 0f), _isGrounded);
+            onDeceleration?.Invoke(!(Rb.velocity.x > 0f), _isGrounded);
             MovementEventFlag = ProjectEnums.MovementState.Decelerating;
         }
 
         _moveSpeed -= effectiveDeceleration * Time.fixedDeltaTime;
         _moveSpeed = Mathf.Clamp(_moveSpeed, 0f, maxMovementSpeed);
         
-        var dir = _rb.velocity.x > 0f ? 1f : -1f;
-        _rb.velocity = new Vector2(_moveSpeed * dir, _rb.velocity.y);
+        var dir = Rb.velocity.x > 0f ? 1f : -1f;
+        Rb.velocity = new Vector2(_moveSpeed * dir, Rb.velocity.y);
         return false;
     }
     
@@ -340,24 +336,11 @@ public class CustomCharacterController : MonoBehaviour
         if(!_isGrounded && !airControl) return;
 
         var effectiveAcceleration = !_isGrounded ? _accelerationRate * airControlAmount : _accelerationRate;
-        
-        //Handle energy related events for movement
-        //Jump energy in Fixed Update
-        if (_isEnergyCharacter)
-        {
-            _energyConsumed += energyConfig.EnergyConsumedPerMoveTick;
-
-            if (_energyConsumed >= _energyManager.SingleCellEnergy * 0.5f)
-            {
-                _energyManager.onEnergyConsumed?.Invoke(_energyConsumed);
-                _energyConsumed = 0f;
-            }
-        }
 
         //if at max speed, end here
-        if (!(Mathf.Abs(_rb.velocity.x) < maxMovementSpeed)) return;
+        if (!(Mathf.Abs(Rb.velocity.x) < maxMovementSpeed)) return;
 
-        _moveSpeed = Mathf.Abs(_rb.velocity.x);
+        _moveSpeed = Mathf.Abs(Rb.velocity.x);
         
         if (MovementEventFlag != ProjectEnums.MovementState.Accelerating)
         {
@@ -377,7 +360,7 @@ public class CustomCharacterController : MonoBehaviour
         _prevMoveSpeed = _moveSpeed;
         
         var dir = isInputRight ? 1f : -1f;
-        _rb.velocity = new Vector2(_moveSpeed * dir, _rb.velocity.y);
+        Rb.velocity = new Vector2(_moveSpeed * dir, Rb.velocity.y);
         
         
     }

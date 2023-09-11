@@ -1,65 +1,94 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(CustomCharacterController))]
-public class PlayerController : MonoBehaviour
+public class PlayerController : CustomCharacterController
 {
     private Vector2 _receivedInput;
-    private Rigidbody2D _rb;
-
-    private CustomCharacterController _characterController;
-
-    private void Start()
-    {
-        _characterController = GetComponent<CustomCharacterController>();
-        _rb = GetComponent<Rigidbody2D>();
-    }
-
+    private bool _isOverloaded;
+    private bool _isRooted;
+    
     public void MovementInputReceived(InputAction.CallbackContext context)
     {
-        //if(!context.performed) return;
+        if (_isOverloaded || _isRooted)
+        {
+            _receivedInput = Vector2.zero;
+            return;
+        }
         
         _receivedInput = context.ReadValue<Vector2>();
 
     }
-    
+
     public void JumpInputReceived(InputAction.CallbackContext context)
     {
+        if (_isOverloaded || _isRooted) return;
+        
         if(context.started)
-            _characterController.Jump();
+            Jump();
         
         if(context.canceled)
-            _characterController.JumpCancelled();
+            JumpCancelled();
     }
 
-    protected void FixedUpdate()
+    protected new void Update()
     {
+        base.Update();
+        //Debug.Log("Overloaded: " + _isOverloaded + "   ----   " + "Rooted: " +  _isRooted);
+    }
+
+    protected new void FixedUpdate()
+    {
+        base.FixedUpdate();
 
         // if input provided        
         if (!Mathf.Approximately(_receivedInput.x, 0f))
         {
             var isInputRight = _receivedInput.x > 0f;
-            var rbMovingRight = _rb.velocity.x > 0f;
+            var rbMovingRight = Rb.velocity.x > 0f;
             
             // if character is already accelerating or decelerating
             // AND
             // if rigidbody direction is different from input direction
-            if (_characterController.MovementEventFlag != ProjectEnums.MovementState.Stopped 
+            if (MovementEventFlag != ProjectEnums.MovementState.Stopped 
                 && rbMovingRight != isInputRight)
             {
-                _characterController.Decelerate();
+                Decelerate();
                 return;
             }
 
-            _characterController.Accelerate(isInputRight);
+            Accelerate(isInputRight);
         }
         else
         {
-            if(_characterController.MovementEventFlag == ProjectEnums.MovementState.Stopped)
+            if(MovementEventFlag == ProjectEnums.MovementState.Stopped)
                 return;
 
-            _characterController.Decelerate();
+            Decelerate();
         }
 
+    }
+
+    public void Recharging(float chargeAmount)
+    {
+        _isOverloaded = false;
+        //TODO CHANGE THIS
+        airControl = true;
+    }
+
+    public void Overload()
+    {
+        _isOverloaded = true;
+        airControl = false;
+    }
+    
+    public void RootBegin()
+    {
+        Debug.Log("Rooted");
+        _isRooted = true;
+    }
+    
+    public void RootEnd()
+    {
+        _isRooted = false;
     }
 }

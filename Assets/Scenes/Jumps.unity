@@ -332,7 +332,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &220408727
 Transform:
   m_ObjectHideFlags: 0
@@ -6093,7 +6093,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 6.13
+  orthographic size: 9.47
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -6118,7 +6118,7 @@ Transform:
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.0026898384, y: 3.9, z: -10}
+  m_LocalPosition: {x: 0, y: 8.08, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6282,7 +6282,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &552114142
 Transform:
   m_ObjectHideFlags: 0
@@ -10345,7 +10345,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &977505826
 Transform:
   m_ObjectHideFlags: 0
@@ -18077,6 +18077,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxEnergy: 100
   energyCellsCount: 5
+  chargeAmount: 15
   onEnergyDepleted:
     m_PersistentCalls:
       m_Calls:
@@ -18100,13 +18101,49 @@ MonoBehaviour:
       m_Calls: []
   onEnergyRecovery:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1468718583}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: Recharging
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onRootBegin:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1468718583}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: RootBegin
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
   onRootEnd:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1468718583}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: RootEnd
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!198 &1429967232 stripped
 ParticleSystem:
   m_CorrespondingSourceObject: {fileID: 3876118708903243191, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
@@ -18362,7 +18399,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3441835184325892247, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onLayerExitCollision.m_PersistentCalls.m_Calls.Array.size
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3441835184325892247, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onLayerEnterCollision.m_PersistentCalls.m_Calls.Array.size
@@ -18375,11 +18412,11 @@ PrefabInstance:
     - target: {fileID: 3441835184325892247, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onLayerExitCollision.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1468718590}
+      objectReference: {fileID: 1468718582}
     - target: {fileID: 3441835184325892247, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onLayerEnterCollision.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
-      objectReference: {fileID: 1468718590}
+      objectReference: {fileID: 1468718583}
     - target: {fileID: 3441835184325892247, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       propertyPath: onLayerEnterCollision.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -18827,13 +18864,10 @@ PrefabInstance:
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 5311456231184830174, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       insertIndex: -1
-      addedObject: {fileID: 1468718583}
-    - targetCorrespondingSourceObject: {fileID: 5311456231184830174, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1468718590}
-    - targetCorrespondingSourceObject: {fileID: 5311456231184830174, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
-      insertIndex: -1
       addedObject: {fileID: 1468718587}
+    - targetCorrespondingSourceObject: {fileID: 5311456231184830174, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1468718583}
     - targetCorrespondingSourceObject: {fileID: 7517677751184569629, guid: 21c0193263a489f4e9a0bc5fcfa8c5e0, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1812919828}
@@ -18876,6 +18910,244 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a6eed987c54abcb46bbbfb0016eec317, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  energyConfig:
+    energyConsumedPerJumpTick: 10
+    energyConsumedPerMoveTick: 8
+  maxMovementSpeed: 15.5
+  timeToReachMaxSpeed: 0.5
+  timeToStop: 0.15
+  moveAnimations: 1
+  moveVfx: 1
+  moveVfxParent: {fileID: 965582221}
+  flipBoost: 0
+  flipBoostScale: 0.33
+  onAcceleration:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1468718581}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: Tilt
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onDeceleration:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1468718581}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: Tilt
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 965582223}
+        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
+        m_MethodName: StopMovementFx
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 965582223}
+        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
+        m_MethodName: TurnDustVfx
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onMaxSpeed:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 965582223}
+        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
+        m_MethodName: StartMovementVfx
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onStoppedMove:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1468718581}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: ResetTilt
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onFlipBoost:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 965582223}
+        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
+        m_MethodName: TurnDustVfx
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  jumpParameters: 2
+  gravityScale: 4
+  maxJumpHeight: 5
+  timeToReachMaxJumpPeak: 0.5
+  jumpAnimations: 1
+  jumpVfx: 1
+  jumpVfxParent: {fileID: 1468718580}
+  altFallGravity: 1
+  altFallGravityScale: 4.5
+  airControl: 1
+  airControlAmount: 0.683
+  onJumpApexReached:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1468718581}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: Stretch
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onJumpInitiated:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1468718581}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: StretchAndReset
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 965582223}
+        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
+        m_MethodName: StopMovementFx
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1772903060}
+        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  onLanded:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1468718581}
+        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
+        m_MethodName: SquashAndReset
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 965582223}
+        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
+        m_MethodName: StartMovementVfx
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1225157836}
+        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1772903060}
+        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+      - m_Target: {fileID: 1429967232}
+        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
+        m_MethodName: Play
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1468718587
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18934,7 +19206,19 @@ MonoBehaviour:
     m_ActionId: ceec8307-d212-450f-90e7-487d077f9e40
     m_ActionName: Player/Jump[/Keyboard/space]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1416908187}
+        m_TargetAssemblyTypeName: EnergyManager, Assembly-CSharp
+        m_MethodName: RootInputReceived
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 355acc6f-0e99-4bab-afb2-8df3b0abac0d
     m_ActionName: Player/Root[/Mouse/rightButton]
   m_NeverAutoSwitchControlSchemes: 0
@@ -18942,256 +19226,6 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
---- !u!114 &1468718590
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1468718582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb27163fb5dd3c1438332e213731f49f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  energyConfig:
-    energyConsumedPerJumpTick: 0.25
-    energyConsumedPerMoveTick: 0.1
-  maxMovementSpeed: 15.1
-  timeToReachMaxSpeed: 0.5
-  timeToStop: 0.15
-  moveAnimations: 1
-  moveVfx: 1
-  moveVfxParent: {fileID: 965582221}
-  flipBoost: 0
-  flipBoostScale: 0.147
-  onAcceleration:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1468718581}
-        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
-        m_MethodName: Tilt
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onDeceleration:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1468718581}
-        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
-        m_MethodName: Tilt
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 965582223}
-        m_TargetAssemblyTypeName: FlipParticleDirection, Assembly-CSharp
-        m_MethodName: StopMovementFx
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 965582223}
-        m_TargetAssemblyTypeName: FlipParticleDirection, Assembly-CSharp
-        m_MethodName: TurnDustVfx
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onMaxSpeed:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 965582223}
-        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
-        m_MethodName: StartMovementVfx
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onStoppedMove:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1468718581}
-        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
-        m_MethodName: ResetTilt
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onFlipBoost:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 965582223}
-        m_TargetAssemblyTypeName: FlipParticleDirection, Assembly-CSharp
-        m_MethodName: TurnDustVfx
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  jumpParameters: 2
-  gravityScale: 4.08
-  maxJumpHeight: 5
-  timeToReachMaxJumpPeak: 0.5
-  jumpAnimations: 1
-  jumpVfx: 1
-  jumpVfxParent: {fileID: 1468718580}
-  altFallGravity: 1
-  altFallGravityScale: 4.51
-  airControl: 1
-  airControlAmount: 0.182
-  onJumpApexReached:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1468718581}
-        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
-        m_MethodName: Stretch
-        m_Mode: 3
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onJumpInitiated:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1468718581}
-        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
-        m_MethodName: StretchAndReset
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1772903060}
-        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 965582223}
-        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
-        m_MethodName: StopMovementFx
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-  onLanded:
-    m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1429967232}
-        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1225157836}
-        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1772903060}
-        m_TargetAssemblyTypeName: UnityEngine.ParticleSystem, UnityEngine
-        m_MethodName: Play
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 1468718581}
-        m_TargetAssemblyTypeName: SpriteAnimations, Assembly-CSharp
-        m_MethodName: SquashAndReset
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 965582223}
-        m_TargetAssemblyTypeName: MovementVfx, Assembly-CSharp
-        m_MethodName: StartMovementVfx
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!1 &1471520157
 GameObject:
   m_ObjectHideFlags: 0
@@ -20273,7 +20307,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1710657558
 Transform:
   m_ObjectHideFlags: 0
@@ -20283,7 +20317,7 @@ Transform:
   m_GameObject: {fileID: 1710657557}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 4.56, z: -10}
+  m_LocalPosition: {x: 0, y: 8.08, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -20312,7 +20346,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_Lens:
     FieldOfView: 34
-    OrthographicSize: 5.69
+    OrthographicSize: 9.47
     NearClipPlane: 0.3
     FarClipPlane: 1000
     Dutch: 0
@@ -20725,7 +20759,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1762729751
 Transform:
   m_ObjectHideFlags: 0
@@ -20888,7 +20922,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1788579096
 Transform:
   m_ObjectHideFlags: 0
@@ -22231,7 +22265,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2100413968
 Transform:
   m_ObjectHideFlags: 0
