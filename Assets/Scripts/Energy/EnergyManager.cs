@@ -1,14 +1,17 @@
 using System;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
 public class EnergyManager : MonoBehaviour
 {
 
-    [SerializeField] private float totalEnergy;
+    [SerializeField] private float maxEnergy;
     [SerializeField] private int energyCellsCount;
 
     private SpriteRenderer[] _energySprites;
+    private bool _isDepleted;
+    private float _currentEnergyAmount;
 
     public float SingleCellEnergy { get; private set; }
 
@@ -23,7 +26,8 @@ public class EnergyManager : MonoBehaviour
 
     private void Awake()
     {
-        SingleCellEnergy = totalEnergy / energyCellsCount;
+        _currentEnergyAmount = maxEnergy;
+        SingleCellEnergy = _currentEnergyAmount / energyCellsCount;
     }
 
     private void OnEnable()
@@ -38,11 +42,14 @@ public class EnergyManager : MonoBehaviour
 
     private void DepleteEnergy(float depletionAmount)
     {
-        totalEnergy -= depletionAmount;
-    }
+        if (_isDepleted) return;
+        
+        _currentEnergyAmount -= depletionAmount;
+        _currentEnergyAmount = Mathf.Clamp(_currentEnergyAmount, 0f, maxEnergy);
 
-    private void Update()
-    {
-        Debug.Log(totalEnergy);
+        if (!(_currentEnergyAmount <= 0)) return;
+        _isDepleted = true;
+        onEnergyDepleted?.Invoke();
     }
+    
 }

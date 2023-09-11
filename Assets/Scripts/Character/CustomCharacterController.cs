@@ -84,6 +84,7 @@ public class CustomCharacterController : MonoBehaviour
     private bool _hasCompletedPause = true;
     private bool _flip;
     private bool _isEnergyCharacter;
+    private bool _isOverloaded;
     private EnergyManager _energyManager;
     
 
@@ -160,10 +161,12 @@ public class CustomCharacterController : MonoBehaviour
         }
 
         MovementEventFlag = ProjectEnums.MovementState.Stopped;
-
-
     }
 
+    public void Overload()
+    {
+        _isOverloaded = true;
+    }
     private void JumpParameterCalculation()
     {
         switch (jumpParameters)
